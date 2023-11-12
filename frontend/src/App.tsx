@@ -1,6 +1,6 @@
 import {NavMain} from "./components/NavMain";
-import { BrowserRouter } from 'react-router-dom';
-import { Auth0Provider} from "@auth0/auth0-react";
+import {BrowserRouter} from 'react-router-dom';
+import {Auth0Provider} from "@auth0/auth0-react";
 import {useStorage} from "./services/StorageService"
 
 function App() {
