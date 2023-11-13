@@ -3,11 +3,11 @@ import {useAuth0} from "@auth0/auth0-react";
 
 // TODO: fix type errors here and in uses of this component
 
-export const AuthProvider = ({children}) => {
+export const AuthProvider = ({ children }) => {
 
     // TODO: do i still need this?
-    let [tempAuthState, useTempAuthState] = useState("Temp Auth State");
-    const { loginWithRedirect, logout } = useAuth0();
+    let [tempAuthState, setTempAuthState] = useState(true);
+    const { isAuthenticated, isLoading, loginWithRedirect, logout } = useAuth0();
 
     const logIn: () => void = () => {
         loginWithRedirect();
@@ -17,8 +17,18 @@ export const AuthProvider = ({children}) => {
         logout({ logoutParams: { returnTo: window.location.origin } });
     };
 
+    const isAuthReady: () => boolean = () => {
+        return !isLoading;
+    };
+
+    const isUserLoggedIn: () => boolean = () => {
+        return isAuthenticated;
+    };
+
     const useAuthContextPackage = {
         tempAuthState,
+        isAuthReady,
+        isUserLoggedIn,
         logIn,
         logOut
     };
