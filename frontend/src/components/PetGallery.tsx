@@ -1,4 +1,3 @@
-import {useAuth} from "../services/AuthService";
 import {useStorage} from "../services/StorageService";
 import {useEffect, useState} from "react";
 import React from "react";
@@ -8,7 +7,6 @@ import {ErrorMessage} from "./ErrorMessage";
 
 export function PetGallery() {
     const {localStorageCache} = useStorage();
-    const {tempAuthState} = useAuth();
     const {logout, isLoading, isAuthenticated, user} = useAuth0();
     let [emptyGallery, setEmptyGallery] = useState(false);
     let [petList, setPetList] = useState([]);
@@ -104,8 +102,6 @@ export function PetGallery() {
                     <main className="container below-navbar">
                         <div className="row text-center">
                             <h1>Pet Gallery</h1>
-                            {/* TODO: REMOVE THIS TEXT */}
-                            <h1>{tempAuthState}</h1>
                         </div>
                         <div className="row text-center mb-5">
                             <legend>View all of the pets you submitted that were rated by other users</legend>

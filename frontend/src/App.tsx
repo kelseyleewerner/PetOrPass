@@ -1,6 +1,7 @@
 import {NavMain} from "./components/NavMain";
 import {BrowserRouter} from 'react-router-dom';
 import {Auth0Provider} from "@auth0/auth0-react";
+import {AuthProvider} from "./services/AuthService"
 import {useStorage} from "./services/StorageService"
 
 function App() {
@@ -15,9 +16,11 @@ function App() {
             }}
             cache={localStorageCache}
         >
-            <BrowserRouter>
-                <NavMain/>
-            </BrowserRouter>
+            <AuthProvider>
+                <BrowserRouter>
+                        <NavMain/>
+                    </BrowserRouter>
+            </AuthProvider>
         </Auth0Provider>
     )
 }

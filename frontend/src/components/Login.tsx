@@ -1,9 +1,9 @@
-import {useAuth0} from "@auth0/auth0-react";
+import {useAuth} from "../services/AuthService";
 import React from "react";
 import catImage from "../assets/nicecate.jpg";
 
 export function Login() {
-    const { loginWithRedirect } = useAuth0();
+    const { logIn } = useAuth();
 
     return (
         <main className="below-navbar container">
@@ -25,7 +25,7 @@ export function Login() {
                         <p className="text-center">Reminder: You must sign up with a functional email address to allow password reset if you forget your password</p>
                     </div>
                     <div className="row justify-content-center align-items-center my-4">
-                        <button className="btn btn-lg button-color w-100" onClick={() => loginWithRedirect()}>Enter Site!</button>
+                        <button className="btn btn-lg button-color w-100" onClick={() => logIn()}>Enter Site!</button>
                     </div>
                 </div>
             </div>
