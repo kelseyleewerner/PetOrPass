@@ -4,7 +4,7 @@ import {RatePet} from "./RatePet";
 import {SubmitPetForm} from "./SubmitPetForm";
 import {PetGallery} from "./PetGallery";
 import {Login} from "./Login";
-import {useAuth0} from "@auth0/auth0-react";
+import {useAuth} from "../services/AuthService";
 import React from "react";
 import {ProtectedRoute} from "./ProtectedRoute";
 
@@ -18,16 +18,16 @@ export function NavMain() {
 }
 
 function NavBar() {
-    const { isAuthenticated, isLoading } = useAuth0();
+    const { isUserLoggedIn, isAuthReady } = useAuth();
 
-    if (isLoading) {
+    if (!isAuthReady()) {
         return (<></>);
     }
 
     return (
         <>
             {
-                isAuthenticated ?
+                isUserLoggedIn() ?
                     <NavView/>
                     : <></>
             }
