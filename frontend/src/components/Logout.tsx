@@ -1,12 +1,12 @@
-import {useAuth0} from "@auth0/auth0-react";
+import {useAuth} from "../services/AuthService";
 import React from "react";
 import {useEffect} from "react";
 
 export function Logout() {
-    const { logout } = useAuth0();
+    const { logOut } = useAuth();
 
     useEffect(() => {
-        logout({ logoutParams: { returnTo: window.location.origin } });
+        logOut();
     });
 
     return (<></>);

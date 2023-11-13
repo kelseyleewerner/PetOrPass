@@ -7,15 +7,20 @@ export const AuthProvider = ({children}) => {
 
     // TODO: do i still need this?
     let [tempAuthState, useTempAuthState] = useState("Temp Auth State");
-    const { loginWithRedirect } = useAuth0();
+    const { loginWithRedirect, logout } = useAuth0();
 
-    const logIn = () => {
+    const logIn: () => void = () => {
         loginWithRedirect();
+    };
+
+    const logOut: () => void = () => {
+        logout({ logoutParams: { returnTo: window.location.origin } });
     };
 
     const useAuthContextPackage = {
         tempAuthState,
-        logIn
+        logIn,
+        logOut
     };
 
     return (
