@@ -1,6 +1,6 @@
 FROM python:alpine
 
-RUN apk update && apk upgrade
+RUN apk update && apk upgrade && apk add build-base libffi-dev
 
 COPY . /app
 
