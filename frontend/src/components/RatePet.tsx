@@ -1,13 +1,11 @@
 import {useEffect, useState} from "react";
 import React from "react";
 import axios from "axios";
-import {useAuth0} from "@auth0/auth0-react";
 import {ErrorMessage} from "./ErrorMessage";
-import {useStorage} from "../services/StorageService";
+import {useAuth, User} from "../services/AuthService";
 
 export function RatePet() {
-    const {localStorageCache} = useStorage();
-    const {logout, isLoading, isAuthenticated} = useAuth0();
+    const {getUser, logOut} = useAuth();
     let [retrieveNextPet, setRetrieveNextPet] = useState(false);
     let [emptyPets, setEmptyPets] = useState(false);
     let [petToRate, setPetToRate] = useState({});
@@ -17,44 +15,18 @@ export function RatePet() {
     let [newScore, setNewScore] = useState(0);
 
     useEffect(() => {
-        // Before verifying if user is authenticated, must check if SDK is still loading
-        while (isLoading) {}
-
-        // Verify that local storage contains token keys,
-        // and if not, log out and redirect to login page
-        const storageKeys = localStorageCache.allKeys();
-        if (storageKeys.length === 0) {
-            logout({ logoutParams: { returnTo: window.location.origin } });
-            return;
-        }
-
-        // Verify that correct key for accessing jwt exists in local storage
-        // and if not, log out and redirect to login page
-        let foundKey: string | boolean = false;
-        storageKeys.forEach((key: string)=>{
-            if (key.includes("@@user@@")) {
-                foundKey = key;
-            }
-        })
-
-        let token;
-        if (foundKey === false) {
-            logout({ logoutParams: { returnTo: window.location.origin } });
-            return;
-        } else {
-            token = localStorageCache.get(foundKey).id_token;
-        }
-
         // If user is authenticated, we can call protected backend route to retrieve a pet to rate
         // If user is not authenticated, log out and redirect to login page
-        if (isAuthenticated) {
+        const user: User = getUser();
+
+        if (user.success) {
             const getPet = async () => {
                 let result;
                 try {
                     result = await axios.get(`http://${import.meta.env.VITE_BACKEND_IP}:${import.meta.env.VITE_BACKEND_PORT}/pet`,
                         {
                             headers: {
-                                "Authorization": `Bearer ${token}`
+                                "Authorization": `Bearer ${user.token}`
                             }
                         });
                 } catch (err) {
@@ -67,10 +39,10 @@ export function RatePet() {
                         ){
                             setEmptyPets(true);
                         } else {
-                            logout({ logoutParams: { returnTo: window.location.origin } });
+                            logOut();
                         }
                     } else {
-                        logout({ logoutParams: { returnTo: window.location.origin } });
+                        logOut();
                     }
 
                     return;
@@ -91,8 +63,6 @@ export function RatePet() {
             }
 
             getPet();
-        } else {
-            logout({ logoutParams: { returnTo: window.location.origin } });
         }
     }, [retrieveNextPet])
 
@@ -215,46 +185,15 @@ function RatePetButtons(props: RatePetButtonsProps) {
         petId,
         setNewScore
     } = props;
-    const {logout,
-        isLoading,
-        isAuthenticated
-    } = useAuth0();
-    const {localStorageCache} = useStorage();
+    const {getUser, logOut} = useAuth();
 
     const onClickRatingButton = async(event: any, rating: number) => {
         setDisableRatingButtons(true);
 
-        // Before verifying if user is authenticated, must check if SDK is still loading
-        while (isLoading) {}
-
-        // Verify that local storage contains token keys,
-        // and if not, log out and redirect to login page
-        const storageKeys = localStorageCache.allKeys();
-        if (storageKeys.length === 0) {
-            logout({ logoutParams: { returnTo: window.location.origin } });
-            return;
-        }
-
-        // Verify that correct key for accessing jwt exists in local storage
-        // and if not, log out and redirect to login page
-        let foundKey = false;
-        storageKeys.forEach((key)=>{
-            if (key.includes("@@user@@")) {
-                foundKey = key;
-            }
-        })
-
-        let token;
-        if (foundKey === false) {
-            logout({ logoutParams: { returnTo: window.location.origin } });
-            return;
-        } else {
-            token = localStorageCache.get(foundKey).id_token;
-        }
-
         // If user is authenticated, we can call protected backend route to update pet's score after being rated
         // If user is not authenticated, log out and redirect to login page
-        if (isAuthenticated) {
+        const user: User = getUser();
+        if (user.success) {
             let result;
             try {
                 result = await axios.put(`http://${import.meta.env.VITE_BACKEND_IP}:${import.meta.env.VITE_BACKEND_PORT}/pet-score`,
@@ -264,18 +203,16 @@ function RatePetButtons(props: RatePetButtonsProps) {
                     },
                     {
                         headers: {
-                            "Authorization": `Bearer ${token}`
+                            "Authorization": `Bearer ${user.token}`
                         }
                     });
             } catch (err) {
                 // If backend route returns an error, the user will be logged out and returned to login page
-                logout({ logoutParams: { returnTo: window.location.origin } });
+                logOut();
             }
 
             setNewScore(result.data.avgScore);
             setNextPet(true);
-        } else {
-            logout({ logoutParams: { returnTo: window.location.origin } });
         }
     }
 
