@@ -8,6 +8,7 @@ function App() {
     const {localStorageCache} = useStorage();
 
     return (
+        // TODO: can i move Auth0Provider into AuthProvider?
         <Auth0Provider
             domain={import.meta.env.VITE_AUTH0_DOMAIN}
             clientId={import.meta.env.VITE_AUTH0_CLIENT_ID}

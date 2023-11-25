@@ -1,55 +1,27 @@
-import {useStorage} from "../services/StorageService";
+import {useAuth, User} from "../services/AuthService";
 import {useEffect, useState} from "react";
 import React from "react";
 import axios from "axios";
-import {useAuth0} from "@auth0/auth0-react";
 import {ErrorMessage} from "./ErrorMessage";
 
 export function PetGallery() {
-    const {localStorageCache} = useStorage();
-    const {logout, isLoading, isAuthenticated, user} = useAuth0();
+    const {getUser, logOut} = useAuth();
     let [emptyGallery, setEmptyGallery] = useState(false);
     let [petList, setPetList] = useState([]);
 
     useEffect(() => {
-        // Before verifying if user is authenticated, must check if SDK is still loading
-        while (isLoading) {}
-
-        // Verify that local storage contains token keys,
-        // and if not, log out and redirect to login page
-        const storageKeys = localStorageCache.allKeys();
-        if (storageKeys.length === 0) {
-            logout({ logoutParams: { returnTo: window.location.origin } });
-            return;
-        }
-
-        // Verify that correct key for accessing jwt exists in local storage
-        // and if not, log out and redirect to login page
-        let foundKey: string | boolean  = false;
-        storageKeys.forEach((key: string)=>{
-            if (key.includes("@@user@@")) {
-                foundKey = key;
-            }
-        })
-
-        let token;
-        if (foundKey === false) {
-            logout({ logoutParams: { returnTo: window.location.origin } });
-            return;
-        } else {
-            token = localStorageCache.get(foundKey).id_token;
-        }
-
         // If user is authenticated, we can call protected backend route to retrieve list of pets
         // If user is not authenticated, log out and redirect to login page
-        if (isAuthenticated) {
+        const user: User = getUser();
+
+        if (user.success) {
             const getPets = async () => {
                 let result;
                 try {
                     result = await axios.get(`http://${import.meta.env.VITE_BACKEND_IP}:${import.meta.env.VITE_BACKEND_PORT}/pets/${user.email}`,
                         {
                             headers: {
-                                "Authorization": `Bearer ${token}`
+                                "Authorization": `Bearer ${user.token}`
                             }
                         });
                 } catch (err) {
@@ -63,10 +35,10 @@ export function PetGallery() {
                         ){
                             setEmptyGallery(true);
                         } else {
-                            logout({ logoutParams: { returnTo: window.location.origin } });
+                            logOut();
                         }
                     } else {
-                        logout({ logoutParams: { returnTo: window.location.origin } });
+                        logOut();
                     }
 
                     return;
@@ -88,8 +60,6 @@ export function PetGallery() {
             }
 
             getPets();
-        } else {
-            logout({ logoutParams: { returnTo: window.location.origin } });
         }
     }, []);
 
