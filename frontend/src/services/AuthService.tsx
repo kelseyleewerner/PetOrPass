@@ -1,4 +1,4 @@
-import {createContext, useContext} from "react";
+import {createContext, useContext, ReactNode} from "react";
 import {useAuth0} from "@auth0/auth0-react";
 import {useStorage} from "./StorageService";
 
@@ -19,7 +19,7 @@ export type User = {
     email: string | undefined
 }
 
-export const AuthProvider = ({ children }) => {
+export const AuthProvider = ({ children }: {children: ReactNode}) => {
     const { isAuthenticated, isLoading, loginWithRedirect, logout, user } = useAuth0();
     const { localStorageCache } = useStorage();
 

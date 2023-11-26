@@ -1,9 +1,9 @@
-import {createContext, useContext, useState} from "react";
+import {createContext, ReactNode, useContext, useState} from "react";
 import {LocalStorageCache} from "@auth0/auth0-react";
 
 type StorageContextProps = {localStorageCache: LocalStorageCache | null};
 
-export const StorageProvider = ({children}) => {
+export const StorageProvider = ({children}: {children: ReactNode}) => {
 
     let [localStorageCache, setLocalStorageCache] = useState(new LocalStorageCache());
 
