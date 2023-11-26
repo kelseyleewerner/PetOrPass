@@ -1,8 +1,16 @@
-import {createContext, useContext, useState} from "react";
+import {createContext, useContext} from "react";
 import {useAuth0} from "@auth0/auth0-react";
 import {useStorage} from "./StorageService";
 
 // TODO: fix type errors here and in uses of this component
+
+type AuthContextProps = {
+    getUser: (() => User) | null,
+    isAuthReady: (() => boolean) | null,
+    isUserLoggedIn: (() => boolean) | null,
+    logIn: (() => void) | null,
+    logOut: (() => void) | null
+};
 
 export type User = {
     success: boolean,
@@ -90,7 +98,17 @@ export const AuthProvider = ({ children }) => {
     );
 }
 
-export const AuthContext = createContext(null);
+// I used a sample React app created by my full stack course instructor to add types and default prop values.
+// The original repo is gone, but I saved a fork of the repo:
+// https://github.com/kelseyleewerner/doggr_w23_fork/blob/master/frontend/src/services/AuthService.tsx#L100
+// https://github.com/kelseyleewerner/doggr_w23_fork/blob/master/frontend/src/types/DoggrTypes.ts#L13
+export const AuthContext = createContext<AuthContextProps>({
+    getUser: null,
+    isAuthReady: null,
+    isUserLoggedIn: null,
+    logIn: null,
+    logOut: null
+});
 
 export const useAuth = () => {
     return useContext(AuthContext);
