@@ -1,22 +1,21 @@
-import {createContext, useContext, ReactNode} from "react";
+import {createContext, ReactNode, useContext} from "react";
 import {useAuth0} from "@auth0/auth0-react";
 import {useStorage} from "./StorageService";
-
-// TODO: fix type errors here and in uses of this component
-
-type AuthContextProps = {
-    getUser: (() => User) | null,
-    isAuthReady: (() => boolean) | null,
-    isUserLoggedIn: (() => boolean) | null,
-    logIn: (() => void) | null,
-    logOut: (() => void) | null
-};
 
 export type User = {
     success: boolean,
     token: string,
     // TODO: fix type so doesn't have to expect undefined
     email: string | undefined
+}
+
+type AuthContextProps = {
+    getToken: ((targetUser: User) => boolean) | undefined,
+    getUser: (() => User) | undefined,
+    isAuthReady: (() => boolean) | undefined,
+    isUserLoggedIn: (() => boolean) | undefined,
+    logIn: (() => void) | undefined,
+    logOut: (() => void) | undefined
 }
 
 export const AuthProvider = ({ children }: {children: ReactNode}) => {
@@ -31,6 +30,7 @@ export const AuthProvider = ({ children }: {children: ReactNode}) => {
         logout({ logoutParams: { returnTo: window.location.origin } });
     };
 
+    // Before verifying if user is authenticated, must check if SDK is still loading
     const isAuthReady: () => boolean = () => {
         return !isLoading;
     };
@@ -39,22 +39,12 @@ export const AuthProvider = ({ children }: {children: ReactNode}) => {
         return isAuthenticated;
     };
 
-    const getUser: () => User = () => {
-        const user_info: User = {
-            success: false,
-            token: '',
-            email: ''
-        }
-
-        // Before verifying if user is authenticated, must check if SDK is still loading
-        while (isLoading) {}
-
+    const getToken: (targetUser: User) => boolean = (targetUser) => {
         // Verify that local storage contains token keys,
         // and if not, log out and redirect to login page
-        const storageKeys = localStorageCache.allKeys();
+        const storageKeys:  = localStorageCache.allKeys();
         if (storageKeys.length === 0) {
-            logOut();
-            return user_info;
+            return false;
         }
 
         // Verify that correct key for accessing jwt exists in local storage
@@ -67,13 +57,25 @@ export const AuthProvider = ({ children }: {children: ReactNode}) => {
         })
 
         if (foundKey === false) {
-            logOut();
-            return user_info;
+            return false;
         } else {
-            user_info.token = localStorageCache.get(foundKey).id_token;
+            targetUser.token = localStorageCache.get(foundKey).id_token;
+            return true;
+        }
+    }
+
+    const getUser: () => User = () => {
+        const user_info: User = {
+            success: false,
+            token: '',
+            email: ''
         }
 
-        if (isUserLoggedIn()) {
+        while (!isAuthReady()) {}
+
+        const retrievedToken: boolean = getToken(user_info);
+
+        if (retrievedToken && isUserLoggedIn()) {
             user_info.success = true;
             user_info.email = user.email;
             return user_info
@@ -84,6 +86,7 @@ export const AuthProvider = ({ children }: {children: ReactNode}) => {
     }
 
     const useAuthContextPackage = {
+        getToken,
         getUser,
         isAuthReady,
         isUserLoggedIn,
@@ -103,11 +106,12 @@ export const AuthProvider = ({ children }: {children: ReactNode}) => {
 // https://github.com/kelseyleewerner/doggr_w23_fork/blob/master/frontend/src/services/AuthService.tsx#L100
 // https://github.com/kelseyleewerner/doggr_w23_fork/blob/master/frontend/src/types/DoggrTypes.ts#L13
 export const AuthContext = createContext<AuthContextProps>({
-    getUser: null,
-    isAuthReady: null,
-    isUserLoggedIn: null,
-    logIn: null,
-    logOut: null
+    getToken: undefined,
+    getUser: undefined,
+    isAuthReady: undefined,
+    isUserLoggedIn: undefined,
+    logIn: undefined,
+    logOut: undefined
 });
 
 export const useAuth = () => {

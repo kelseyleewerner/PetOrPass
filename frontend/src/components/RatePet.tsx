@@ -29,7 +29,8 @@ export function RatePet() {
                                 "Authorization": `Bearer ${user.token}`
                             }
                         });
-                } catch (err) {
+                // Catching any type to ensure catching all possible errors
+                } catch (err: any) {
                     // Upon encountering an unidentified server error, the user will be logged out and returned to login page
                     if (err.response) {
                         // If no pets have been submitted by any users, then the page will display an empty state

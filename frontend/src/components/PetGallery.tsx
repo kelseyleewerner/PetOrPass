@@ -4,6 +4,15 @@ import React from "react";
 import axios from "axios";
 import {ErrorMessage} from "./ErrorMessage";
 
+
+// TODO: is these a better way to define this type?
+type Pet = {
+    petId: string | number | undefined,
+    petName: string | number | undefined,
+    imageUrl: string | number | undefined,
+    avgScore: string | number | undefined
+}
+
 export function PetGallery() {
     const {getUser, logOut} = useAuth();
     let [emptyGallery, setEmptyGallery] = useState(false);
@@ -24,7 +33,8 @@ export function PetGallery() {
                                 "Authorization": `Bearer ${user.token}`
                             }
                         });
-                } catch (err) {
+                // Catching any type to ensure catching all possible errors
+                } catch (err: any) {
                     // Upon encountering an unidentified server error, the user will be logged out and returned to login page
                     if (err.response) {
                         // If user has not yet submitted any pets, then their gallery will display an empty state
@@ -45,8 +55,8 @@ export function PetGallery() {
                 }
 
                 // Upon successful reply from server, display list of pets submitted by user
-                let pets = [];
-                result.data.forEach((item) => {
+                let pets: Pet[] = [];
+                result.data.forEach((item: {[char: string]: string | number}) => {
                     pets.push({
                         petId: item.pet_id,
                         petName: item.pet_name,
@@ -77,7 +87,7 @@ export function PetGallery() {
                             <legend>View all of the pets you submitted that were rated by other users</legend>
                         </div>
                         <div className="row align-items-center justify-content-center">
-                            {petList.map((pet) => <PetProfile key={pet.petId} petName={pet.petName} avgScore={pet.avgScore} imageUrl={pet.imageUrl} />)}
+                            {petList.map((pet: Pet) => <PetProfile key={pet.petId} petName={pet.petName} avgScore={pet.avgScore} imageUrl={pet.imageUrl} />)}
                         </div>
                     </main>
             }
@@ -85,10 +95,11 @@ export function PetGallery() {
     );
 }
 
+// TODO: is these a better way to define this type?
 export type PetProfileProps = {
-    petName: string,
-    avgScore: number,
-    imageUrl: string
+    petName: string | number | undefined,
+    avgScore: string | number | undefined,
+    imageUrl: string | number | undefined
 }
 
 function PetProfile(props: PetProfileProps) {
