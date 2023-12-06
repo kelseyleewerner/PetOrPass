@@ -1,17 +1,16 @@
 import {createContext, ReactNode, useContext} from "react";
-import {useAuth0} from "@auth0/auth0-react";
+import {Cacheable, useAuth0} from "@auth0/auth0-react";
 import {useStorage} from "./StorageService";
 
 export type User = {
     success: boolean,
     token: string,
-    // TODO: fix type so doesn't have to expect undefined
-    email: string | undefined
+    email: string
 }
 
 type AuthContextProps = {
-    getToken: ((targetUser: User) => boolean) | undefined,
-    getUser: (() => User) | undefined,
+    getToken: (() => Promise<string | null>) | undefined,
+    getUser: (() => Promise<User>) | undefined,
     isAuthReady: (() => boolean) | undefined,
     isUserLoggedIn: (() => boolean) | undefined,
     logIn: (() => void) | undefined,
@@ -39,12 +38,17 @@ export const AuthProvider = ({ children }: {children: ReactNode}) => {
         return isAuthenticated;
     };
 
-    const getToken: (targetUser: User) => boolean = (targetUser) => {
+    const getToken: () => Promise<string | null> = async () => {
         // Verify that local storage contains token keys,
         // and if not, log out and redirect to login page
-        const storageKeys:  = localStorageCache.allKeys();
+        if (localStorageCache === undefined) {
+            return null;
+        }
+
+        const storageKeys = localStorageCache.allKeys();
+
         if (storageKeys.length === 0) {
-            return false;
+            return null;
         }
 
         // Verify that correct key for accessing jwt exists in local storage
@@ -57,14 +61,20 @@ export const AuthProvider = ({ children }: {children: ReactNode}) => {
         })
 
         if (foundKey === false) {
-            return false;
+            return null;
         } else {
-            targetUser.token = localStorageCache.get(foundKey).id_token;
-            return true;
+            // TODO: add explanation for why checking for any type
+            // https://auth0.github.io/auth0-react/types/Cacheable.html
+            const token: any | undefined = await localStorageCache.get(foundKey);
+            if (token === undefined) {
+                return null;
+            }
+
+            return token.id_token;
         }
     }
 
-    const getUser: () => User = () => {
+    const getUser: () => Promise<User> = async () => {
         const user_info: User = {
             success: false,
             token: '',
@@ -73,10 +83,14 @@ export const AuthProvider = ({ children }: {children: ReactNode}) => {
 
         while (!isAuthReady()) {}
 
-        const retrievedToken: boolean = getToken(user_info);
+        const token: string | null = await getToken();
 
-        if (retrievedToken && isUserLoggedIn()) {
+        if (token !== null
+                && isUserLoggedIn()
+                && user !== undefined
+                && user.email !== undefined) {
             user_info.success = true;
+            user_info.token = token
             user_info.email = user.email;
             return user_info
         }
@@ -85,7 +99,7 @@ export const AuthProvider = ({ children }: {children: ReactNode}) => {
         return user_info;
     }
 
-    const useAuthContextPackage = {
+    const useAuthContextPackage: AuthContextProps = {
         getToken,
         getUser,
         isAuthReady,
@@ -100,6 +114,9 @@ export const AuthProvider = ({ children }: {children: ReactNode}) => {
         </AuthContext.Provider>
     );
 }
+
+// TODO: should i make some of these private?
+
 
 // I used a sample React app created by my full stack course instructor to add types and default prop values.
 // The original repo is gone, but I saved a fork of the repo:

@@ -1,13 +1,13 @@
 import {createContext, ReactNode, useContext, useState} from "react";
 import {LocalStorageCache, ICache} from "@auth0/auth0-react";
 
-type StorageContextProps = {localStorageCache: ICache | undefined}
+type StorageContextProps = {localStorageCache: LocalStorageCache}
 
 export const StorageProvider = ({children}: {children: ReactNode}) => {
 
-    let [localStorageCache, setLocalStorageCache] = useState(new LocalStorageCache());
+    let [localStorageCache] = useState(new LocalStorageCache());
 
-    const useStorageContextPackage = {
+    const useStorageContextPackage: StorageContextProps = {
         localStorageCache
     };
 
@@ -22,8 +22,9 @@ export const StorageProvider = ({children}: {children: ReactNode}) => {
 // The original repo is gone, but I saved a fork of the repo:
 // https://github.com/kelseyleewerner/doggr_w23_fork/blob/master/frontend/src/services/AuthService.tsx#L100
 // https://github.com/kelseyleewerner/doggr_w23_fork/blob/master/frontend/src/types/DoggrTypes.ts#L13
-export const StorageContext = createContext<StorageContextProps>({localStorageCache: undefined});
+const initialCache: LocalStorageCache = new LocalStorageCache();
+export const StorageContext: React.Context<StorageContextProps> = createContext<StorageContextProps>({localStorageCache: initialCache});
 
-export const useStorage = () => {
+export const useStorage: () => StorageContextProps = () => {
     return useContext(StorageContext);
 }
