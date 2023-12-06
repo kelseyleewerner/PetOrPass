@@ -5,7 +5,7 @@ export type ErrorProps = {
     errorMessage: string
 }
 export function ErrorMessage(props: ErrorProps) {
-    let {errorMessage} = props;
+    let { errorMessage } = props;
 
     return (
         <main className="container below-navbar text-center">
