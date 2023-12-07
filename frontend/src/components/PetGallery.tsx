@@ -11,7 +11,6 @@ type Pet = {
   avgScore: string | number | undefined;
 };
 
-// TODO: give more descriptive name
 type PetRecord = {
   pet_id: string,
   pet_name: string,

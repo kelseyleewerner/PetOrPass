@@ -1,4 +1,4 @@
-import {useState, useRef} from 'react';
+import {ChangeEvent, MouseEvent, useRef, useState} from 'react';
 import React from "react";
 import axios from 'axios';
 import {useAuth, User} from "../services/AuthService";
@@ -12,12 +12,12 @@ export function SubmitPetForm() {
     let [disableButton, setDisableButton] = useState(false);
     const imageInputField = useRef(null);
 
-    const onChangePetName = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const onChangePetName = (event: ChangeEvent<HTMLInputElement>) => {
         setPetName(event.target.value);
         setSubmitError(false);
     }
 
-    const onChangePetImage = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const onChangePetImage = (event: ChangeEvent<HTMLInputElement>) => {
         if (event.target.files ===  null) {
             setSubmitError(true);
         } else {
@@ -26,7 +26,7 @@ export function SubmitPetForm() {
         }
     }
 
-    const onSubmitPet = async(event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+    const onSubmitPet = async(event: MouseEvent<HTMLButtonElement, MouseEvent>) => {
         event.preventDefault();
         setDisableButton(true);
 
@@ -52,7 +52,8 @@ export function SubmitPetForm() {
                         "Authorization": `Bearer ${user.token}`
                     }
                 })
-            } catch(error) {
+                // TODO: need comment explaining why this has an any type
+            } catch(err: any) {
                 // If backend route returns an error, display error message to user
                 setSubmitError(true);
                 success = false;

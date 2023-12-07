@@ -1,18 +1,37 @@
-import { useEffect, useState } from "react";
+import { Dispatch, MouseEvent, SetStateAction, useEffect, useState } from "react";
 import React from "react";
-import axios from "axios";
+import axios, {AxiosResponse} from "axios";
 import { ErrorMessage } from "./ErrorMessage";
 import { useAuth, User } from "../services/AuthService";
+
+type PetToRate = {
+  pet_id: string,
+  pet_name: string,
+  image_name: string
+}
+
+type PetRatingProfile = {
+  petId: string,
+  petName: string,
+  imageUrl: string
+}
+
+type PetScoreRecord = {
+  avgScore: number
+}
 
 export function RatePet() {
   const { getUser, logOut } = useAuth();
   let [retrieveNextPet, setRetrieveNextPet] = useState(false);
   let [emptyPets, setEmptyPets] = useState(false);
-  let [petToRate, setPetToRate] = useState({});
+  // TODO: add comment about how typecasting here because we always check if desired keys exist in petToRate before trying to access them
+  // TODO: write comment referencing https://stackoverflow.com/questions/53650468/set-types-on-usestate-react-hook-with-typescript
+  let [petToRate, setPetToRate] = useState<PetRatingProfile>({} as PetRatingProfile);
   let [nextPet, setNextPet] = useState(false);
   let [disableRatingButtons, setDisableRatingButtons] = useState(false);
   let [disableNextButton, setDisableNextButton] = useState(false);
-  let [newScore, setNewScore] = useState(0);
+  // TODO: write comment referencing https://stackoverflow.com/questions/53650468/set-types-on-usestate-react-hook-with-typescript
+  let [newScore, setNewScore] = useState<number>(0);
 
   useEffect(() => {
     // If user is authenticated, we can call protected backend route to retrieve a pet to rate
@@ -21,7 +40,8 @@ export function RatePet() {
       const user: User = await getUser();
 
       if (user.success) {
-        let result;
+        // TODO: add that got help from another student to figure out how to create type using source code
+        let result: AxiosResponse<PetToRate, any>;
         try {
           result = await axios.get(
             `http://${import.meta.env.VITE_BACKEND_IP}:${
@@ -33,6 +53,7 @@ export function RatePet() {
               },
             }
           );
+          // TODO: need comment explaining why this has an any type
           // Catching any type to ensure catching all possible errors
         } catch (err: any) {
           // Upon encountering an unidentified server error, the user will be logged out and returned to login page
@@ -56,7 +77,7 @@ export function RatePet() {
         }
 
         // Upon successful reply from server, display pet to the user for rating
-        const pet = {
+        const pet: PetRatingProfile = {
           petId: result.data.pet_id,
           petName: result.data.pet_name,
           imageUrl: result.data.image_name,
@@ -113,17 +134,17 @@ export function RatePet() {
 export type RatePetProps = {
   petName: string;
   imageUrl: string;
-  setNextPet: () => void;
-  setRetrieveNextPet: () => void;
+  setNextPet: Dispatch<SetStateAction<boolean>>;
+  setRetrieveNextPet: Dispatch<SetStateAction<boolean>>;
   retrieveNextPet: boolean;
   nextPet: boolean;
-  setDisableRatingButtons: () => void;
+  setDisableRatingButtons: Dispatch<SetStateAction<boolean>>;
   disableRatingButtons: boolean;
-  setDisableNextButton: () => void;
+  setDisableNextButton: Dispatch<SetStateAction<boolean>>;
   disableNextButton: boolean;
-  petId: number;
+  petId: string;
   newScore: number;
-  setNewScore: () => void;
+  setNewScore: Dispatch<SetStateAction<number>>;
 };
 
 function RatePetView(props: RatePetProps) {
@@ -179,11 +200,11 @@ function RatePetView(props: RatePetProps) {
 }
 
 export type RatePetButtonsProps = {
-  setNextPet: () => void;
-  setDisableRatingButtons: () => void;
+  setNextPet: Dispatch<SetStateAction<boolean>>;
+  setDisableRatingButtons: Dispatch<SetStateAction<boolean>>;
   disableRatingButtons: boolean;
-  petId: petId;
-  setNewScore: () => void;
+  petId: string;
+  setNewScore: Dispatch<SetStateAction<number>>;
 };
 
 function RatePetButtons(props: RatePetButtonsProps) {
@@ -196,14 +217,15 @@ function RatePetButtons(props: RatePetButtonsProps) {
   } = props;
   const { getUser, logOut } = useAuth();
 
-  const onClickRatingButton = async (event, rating: number) => {
+  const onClickRatingButton = async (event:MouseEvent<HTMLButtonElement, globalThis.MouseEvent>, rating: number) => {
     setDisableRatingButtons(true);
 
     // If user is authenticated, we can call protected backend route to update pet's score after being rated
     // If user is not authenticated, log out and redirect to login page
     const user: User = await getUser();
     if (user.success) {
-      let result;
+      // TODO: add that got help from another student to figure out how to create type using source code
+      let result: AxiosResponse<PetScoreRecord, any>;
       try {
         result = await axios.put(
           `http://${import.meta.env.VITE_BACKEND_IP}:${
@@ -222,6 +244,7 @@ function RatePetButtons(props: RatePetButtonsProps) {
       } catch (err) {
         // If backend route returns an error, the user will be logged out and returned to login page
         logOut();
+        return;
       }
 
       setNewScore(result.data.avgScore);
@@ -256,9 +279,9 @@ function RatePetButtons(props: RatePetButtonsProps) {
 }
 
 export type DisplayPetRatingProps = {
-  setRetrieveNextPet: () => void;
+  setRetrieveNextPet: Dispatch<SetStateAction<boolean>>;
   retrieveNextPet: boolean;
-  setDisableNextButton: () => void;
+  setDisableNextButton: Dispatch<SetStateAction<boolean>>;
   disableNextButton: boolean;
   newScore: number;
 };
@@ -272,7 +295,7 @@ function DisplayPetRating(props: DisplayPetRatingProps) {
     newScore,
   } = props;
 
-  const onClickNextButton = (event) => {
+  const onClickNextButton = (event: MouseEvent<HTMLButtonElement, globalThis.MouseEvent>) => {
     setDisableNextButton(true);
     setRetrieveNextPet(!retrieveNextPet);
   };
@@ -287,7 +310,7 @@ function DisplayPetRating(props: DisplayPetRatingProps) {
           <button
             className="btn btn-lg button-color w-100"
             type="submit"
-            onClick={onClickNextButton}
+            onClick={(e) => onClickNextButton(e)}
             disabled={disableNextButton}
           >
             Next!
