@@ -6,11 +6,12 @@ import {useAuth, User} from "../services/AuthService";
 export function SubmitPetForm() {
     const {getUser} = useAuth();
     let [petName, setPetName] = useState('');
-    let [petImage, setPetImage] = useState(null);
+    // TODO: write comment referencing https://stackoverflow.com/questions/53650468/set-types-on-usestate-react-hook-with-typescript
+    let [petImage, setPetImage] = useState<File | undefined>(undefined);
     let [submitSuccess, setSubmitSuccess] = useState(false);
     let [submitError, setSubmitError] = useState(false);
     let [disableButton, setDisableButton] = useState(false);
-    const imageInputField = useRef(null);
+    const imageInputField = useRef<HTMLInputElement>(null);
 
     const onChangePetName = (event: ChangeEvent<HTMLInputElement>) => {
         setPetName(event.target.value);
@@ -18,7 +19,7 @@ export function SubmitPetForm() {
     }
 
     const onChangePetImage = (event: ChangeEvent<HTMLInputElement>) => {
-        if (event.target.files ===  null) {
+        if (event.target.files ===  null || event.target.files[0] === null) {
             setSubmitError(true);
         } else {
             setPetImage(event.target.files[0]);
@@ -26,8 +27,13 @@ export function SubmitPetForm() {
         }
     }
 
-    const onSubmitPet = async(event: MouseEvent<HTMLButtonElement, MouseEvent>) => {
+    const onSubmitPet = async(event: MouseEvent<HTMLButtonElement, globalThis.MouseEvent>) => {
         event.preventDefault();
+
+        if (petImage === undefined) {
+            return;
+        }
+
         setDisableButton(true);
 
         // If user is authenticated, we can call protected backend route to submit pet form
@@ -62,8 +68,10 @@ export function SubmitPetForm() {
             // If form is submitted successfully, clear form data and display success message to user
             setSubmitSuccess(success);
             setPetName('');
-            setPetImage(null);
-            imageInputField.current.value = '';
+            setPetImage(undefined);
+            if (imageInputField.current !== null) {
+                imageInputField.current.value = '';
+            }
             setDisableButton(false);
         }
     }
@@ -108,7 +116,7 @@ export function SubmitPetForm() {
                     <button className="btn btn-lg button-color w-100"
                             onClick={sp => onSubmitPet(sp)}
                             type="submit"
-                            disabled={disableButton || petName === '' || petImage === null || imageInputField.current.value === ''}>
+                            disabled={disableButton || petName === '' || petImage === undefined || imageInputField.current === null || imageInputField.current.value === ''}>
                         Submit!
                     </button>
                 </div>
