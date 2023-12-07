@@ -12,23 +12,27 @@ export function SubmitPetForm() {
     let [disableButton, setDisableButton] = useState(false);
     const imageInputField = useRef(null);
 
-    const onChangePetName = (event:any) => {
+    const onChangePetName = (event: React.ChangeEvent<HTMLInputElement>) => {
         setPetName(event.target.value);
         setSubmitError(false);
     }
 
-    const onChangePetImage = (event:any) => {
-        setPetImage(event.target.files[0]);
-        setSubmitError(false);
+    const onChangePetImage = (event: React.ChangeEvent<HTMLInputElement>) => {
+        if (event.target.files ===  null) {
+            setSubmitError(true);
+        } else {
+            setPetImage(event.target.files[0]);
+            setSubmitError(false);
+        }
     }
 
-    const onSubmitPet = async(event:any) => {
+    const onSubmitPet = async(event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
         event.preventDefault();
         setDisableButton(true);
 
         // If user is authenticated, we can call protected backend route to submit pet form
         // If user is not authenticated, log out and redirect to login page
-        const user: User = getUser();
+        const user: User = await getUser();
 
         if (user.success) {
             const formData = new FormData();
@@ -101,7 +105,7 @@ export function SubmitPetForm() {
             <div className="row mt-5 justify-content-center">
                 <div className="col-xl-4 col-md-6 col-sm-8 col-10">
                     <button className="btn btn-lg button-color w-100"
-                            onClick={onSubmitPet}
+                            onClick={sp => onSubmitPet(sp)}
                             type="submit"
                             disabled={disableButton || petName === '' || petImage === null || imageInputField.current.value === ''}>
                         Submit!
