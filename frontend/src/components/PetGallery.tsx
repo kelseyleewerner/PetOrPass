@@ -1,21 +1,31 @@
 import { useAuth, User } from "../services/AuthService";
 import { useEffect, useState } from "react";
 import React from "react";
-import axios from "axios";
+import axios, {AxiosResponse} from "axios";
 import { ErrorMessage } from "./ErrorMessage";
 
-// TODO: is these a better way to define this type?
 type Pet = {
-  petId: string | number | undefined;
-  petName: string | number | undefined;
-  imageUrl: string | number | undefined;
+  petId: string | undefined;
+  petName: string | undefined;
+  imageUrl: string | undefined;
   avgScore: string | number | undefined;
 };
+
+// TODO: give more descriptive name
+type PetRecord = {
+  pet_id: string,
+  pet_name: string,
+  image_name: string,
+  total_score: number,
+  total_votes: number,
+  submitted_by: string
+}
 
 export function PetGallery() {
   const { getUser, logOut } = useAuth();
   let [emptyGallery, setEmptyGallery] = useState(false);
-  let [petList, setPetList] = useState([]);
+  // TODO: write comment referencing https://stackoverflow.com/questions/53650468/set-types-on-usestate-react-hook-with-typescript
+  let [petList, setPetList] = useState<Pet[]>([]);
 
   useEffect(() => {
     const getPets = async () => {
@@ -24,7 +34,8 @@ export function PetGallery() {
       const user: User = await getUser();
 
       if (user.success) {
-        let result;
+        // TODO: add that got help from another student to figure out how to create type using source code
+        let result: AxiosResponse<PetRecord[], any>;
         try {
           result = await axios.get(
             `http://${import.meta.env.VITE_BACKEND_IP}:${
@@ -36,6 +47,7 @@ export function PetGallery() {
               },
             }
           );
+          // TODO: need comment explaining why this has an any type
           // Catching any type to ensure catching all possible errors
         } catch (err: any) {
           // Upon encountering an unidentified server error, the user will be logged out and returned to login page
@@ -61,7 +73,7 @@ export function PetGallery() {
 
         // Upon successful reply from server, display list of pets submitted by user
         let pets: Pet[] = [];
-        result.data.forEach((item: { [char: string]: string | number }) => {
+        result.data.forEach((item: PetRecord) => {
           pets.push({
             petId: item.pet_id,
             petName: item.pet_name,
@@ -111,11 +123,10 @@ export function PetGallery() {
   );
 }
 
-// TODO: is these a better way to define this type?
 export type PetProfileProps = {
-  petName: string | number | undefined;
+  petName: string | undefined;
   avgScore: string | number | undefined;
-  imageUrl: string | number | undefined;
+  imageUrl: string | undefined;
 };
 
 function PetProfile(props: PetProfileProps) {

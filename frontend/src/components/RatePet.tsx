@@ -17,7 +17,6 @@ export function RatePet() {
   useEffect(() => {
     // If user is authenticated, we can call protected backend route to retrieve a pet to rate
     // If user is not authenticated, log out and redirect to login page
-
     const getPet = async () => {
       const user: User = await getUser();
 
