@@ -1,22 +1,28 @@
-import { Dispatch, MouseEvent, SetStateAction, useEffect, useState } from "react";
+import {
+  Dispatch,
+  MouseEvent,
+  SetStateAction,
+  useEffect,
+  useState,
+} from "react";
 import React from "react";
-import axios, {AxiosResponse} from "axios";
+import axios, { AxiosResponse } from "axios";
 import { ErrorMessage } from "./ErrorMessage";
 import { useAuth, User } from "../services/AuthService";
 
 type PetRatingProfile = {
-  petId: string,
-  petName: string,
-  imageUrl: string
-}
+  petId: string;
+  petName: string;
+  imageUrl: string;
+};
 
 // PetToRate type represents the expected shape of the data returned by the app's backend
 // for a pet that is being presented for rating
 type PetToRate = {
-  pet_id: string,
-  pet_name: string,
-  image_name: string
-}
+  pet_id: string;
+  pet_name: string;
+  image_name: string;
+};
 
 // This component displays pets to the user and allows the user to rate each pet as "Pet" or "Pass"
 export function RatePet() {
@@ -27,7 +33,9 @@ export function RatePet() {
   // https://stackoverflow.com/questions/53650468/set-types-on-usestate-react-hook-with-typescript
   // Typecasting the default value of petToRate as a PetRatingProfile is possible as long as petToRate is checked for keys
   // before trying to access a specific key
-  let [petToRate, setPetToRate] = useState<PetRatingProfile>({} as PetRatingProfile);
+  let [petToRate, setPetToRate] = useState<PetRatingProfile>(
+    {} as PetRatingProfile
+  );
   let [nextPet, setNextPet] = useState(false);
   let [disableRatingButtons, setDisableRatingButtons] = useState(false);
   let [disableNextButton, setDisableNextButton] = useState(false);
@@ -56,7 +64,7 @@ export function RatePet() {
               },
             }
           );
-        // err has type of "any" because we explicitly want to catch all possible errors
+          // err has type of "any" because we explicitly want to catch all possible errors
         } catch (err: any) {
           // Upon encountering an unidentified server error, the user will be logged out and returned to login page
           if (err.response) {
@@ -202,8 +210,8 @@ function RatePetView(props: RatePetProps) {
 }
 
 type PetScoreRecord = {
-  avgScore: number
-}
+  avgScore: number;
+};
 
 type RatePetButtonsProps = {
   setNextPet: Dispatch<SetStateAction<boolean>>;
@@ -223,7 +231,10 @@ function RatePetButtons(props: RatePetButtonsProps) {
   } = props;
   const { getUser, logOut } = useAuth();
 
-  const onClickRatingButton = async (event:MouseEvent<HTMLButtonElement, globalThis.MouseEvent>, rating: number) => {
+  const onClickRatingButton = async (
+    event: MouseEvent<HTMLButtonElement, globalThis.MouseEvent>,
+    rating: number
+  ) => {
     setDisableRatingButtons(true);
 
     // If user is authenticated, we can call a private back end route to update pet's score after being rated, but
@@ -248,7 +259,7 @@ function RatePetButtons(props: RatePetButtonsProps) {
             },
           }
         );
-      // err has type of "any" because we explicitly want to catch all possible errors
+        // err has type of "any" because we explicitly want to catch all possible errors
       } catch (err: any) {
         // If backend route returns an error, the user will be logged out and returned to login page
         logOut();
@@ -303,7 +314,9 @@ function DisplayPetRating(props: DisplayPetRatingProps) {
     newScore,
   } = props;
 
-  const onClickNextButton = (event: MouseEvent<HTMLButtonElement, globalThis.MouseEvent>) => {
+  const onClickNextButton = (
+    event: MouseEvent<HTMLButtonElement, globalThis.MouseEvent>
+  ) => {
     setDisableNextButton(true);
     setRetrieveNextPet(!retrieveNextPet);
   };

@@ -1,7 +1,7 @@
 import { useAuth, User } from "../services/AuthService";
 import { useEffect, useState } from "react";
 import React from "react";
-import axios, {AxiosResponse} from "axios";
+import axios, { AxiosResponse } from "axios";
 import { ErrorMessage } from "./ErrorMessage";
 
 type Pet = {
@@ -14,13 +14,13 @@ type Pet = {
 // PetRecord type represents the expected shape of the data returned by the app's backend
 // for an individual pet
 type PetRecord = {
-  pet_id: string,
-  pet_name: string,
-  image_name: string,
-  total_score: number,
-  total_votes: number,
-  submitted_by: string
-}
+  pet_id: string;
+  pet_name: string;
+  image_name: string;
+  total_score: number;
+  total_votes: number;
+  submitted_by: string;
+};
 
 // This component displays a gallery view of all of the pets submitted by the current user. If
 // the user has not yet submitted any pets, then a helpful empty state message is displayed on the page
@@ -52,7 +52,7 @@ export function PetGallery() {
               },
             }
           );
-        // err has type of "any" because we explicitly want to catch all possible errors
+          // err has type of "any" because we explicitly want to catch all possible errors
         } catch (err: any) {
           // Upon encountering an unidentified server error, the user will be logged out and returned to login page
           if (err.response) {

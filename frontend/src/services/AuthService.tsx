@@ -130,7 +130,8 @@ export const AuthProvider: ({
 // The original repo is gone, but I saved a fork of the repo:
 // https://github.com/kelseyleewerner/doggr_w23_fork/blob/master/frontend/src/services/AuthService.tsx#L100
 // https://github.com/kelseyleewerner/doggr_w23_fork/blob/master/frontend/src/types/DoggrTypes.ts#L13
-export const AuthContext: React.Context<AuthContextProps | undefined> = createContext<AuthContextProps | undefined>(undefined);
+export const AuthContext: React.Context<AuthContextProps | undefined> =
+  createContext<AuthContextProps | undefined>(undefined);
 
 // I used the following resource to avoid having to create an unnecessary default context:
 // https://stackoverflow.com/questions/61333188/react-typescript-avoid-context-default-value
