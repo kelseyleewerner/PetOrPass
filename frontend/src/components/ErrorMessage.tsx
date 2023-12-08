@@ -4,6 +4,7 @@ import React from "react";
 type ErrorProps = {
     errorMessage: string
 }
+
 export function ErrorMessage(props: ErrorProps) {
     let { errorMessage } = props;
 
@@ -12,6 +13,8 @@ export function ErrorMessage(props: ErrorProps) {
             <div className="row">
                 <img
                     src={errorImage}
+                    // ErrorMessage is currently only implemented to display 404 messages in the alt
+                    // and title attributes
                     alt="404 error message"
                     title="404 error message"
                     className="mx-auto img-fluid col-10 col-sm-8 col-md-7 col-lg-5"

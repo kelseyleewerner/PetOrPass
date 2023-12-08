@@ -3,10 +3,13 @@ import React from "react";
 import axios from 'axios';
 import {useAuth, User} from "../services/AuthService";
 
+// This component allows the user to submit a pet to be rated by other users and included in the user's
+// gallery of submitted pets
 export function SubmitPetForm() {
     const {getUser} = useAuth();
     let [petName, setPetName] = useState('');
-    // TODO: write comment referencing https://stackoverflow.com/questions/53650468/set-types-on-usestate-react-hook-with-typescript
+    // I used the following reference to learn how to assign a type to the useState hook:
+    // https://stackoverflow.com/questions/53650468/set-types-on-usestate-react-hook-with-typescript
     let [petImage, setPetImage] = useState<File | undefined>(undefined);
     let [submitSuccess, setSubmitSuccess] = useState(false);
     let [submitError, setSubmitError] = useState(false);
@@ -36,8 +39,8 @@ export function SubmitPetForm() {
 
         setDisableButton(true);
 
-        // If user is authenticated, we can call protected backend route to submit pet form
-        // If user is not authenticated, log out and redirect to login page
+        // If user is authenticated, we can call a private back end route to submit pet form data, but
+        // if user is not authenticated, they are logged out and redirected to the login page
         const user: User = await getUser();
 
         if (user.success) {
@@ -58,14 +61,15 @@ export function SubmitPetForm() {
                         "Authorization": `Bearer ${user.token}`
                     }
                 })
-                // TODO: need comment explaining why this has an any type
+            // err has type of "any" because we explicitly want to catch all possible errors
             } catch(err: any) {
                 // If backend route returns an error, display error message to user
                 setSubmitError(true);
                 success = false;
             }
 
-            // If form is submitted successfully, clear form data and display success message to user
+            // If form is submitted successfully, clear form data,
+            // disable Submit button, and display success message to user
             setSubmitSuccess(success);
             setPetName('');
             setPetImage(undefined);

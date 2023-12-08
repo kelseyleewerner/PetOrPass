@@ -17,6 +17,7 @@ export function NavMain() {
     );
 }
 
+// Navigation bar is only displayed on the page if the user is logged in
 function NavBar() {
     const { isUserLoggedIn, isAuthReady } = useAuth();
 
@@ -76,6 +77,8 @@ function NavLinks() {
     );
 }
 
+// Components wrapped in ProtectedRoute cannot be accessed via inputting a URL into the browser if the
+// user is not logged in
 function NavRoutes() {
     return (
         <Routes>

@@ -11,6 +11,8 @@ type Pet = {
   avgScore: string | number | undefined;
 };
 
+// PetRecord type represents the expected shape of the data returned by the app's backend
+// for an individual pet
 type PetRecord = {
   pet_id: string,
   pet_name: string,
@@ -20,20 +22,24 @@ type PetRecord = {
   submitted_by: string
 }
 
+// This component displays a gallery view of all of the pets submitted by the current user. If
+// the user has not yet submitted any pets, then a helpful empty state message is displayed on the page
 export function PetGallery() {
   const { getUser, logOut } = useAuth();
   let [emptyGallery, setEmptyGallery] = useState(false);
-  // TODO: write comment referencing https://stackoverflow.com/questions/53650468/set-types-on-usestate-react-hook-with-typescript
+  // I used the following reference to learn how to assign a type to the useState hook:
+  // https://stackoverflow.com/questions/53650468/set-types-on-usestate-react-hook-with-typescript
   let [petList, setPetList] = useState<Pet[]>([]);
 
   useEffect(() => {
     const getPets = async () => {
-      // If user is authenticated, we can call protected backend route to retrieve list of pets
-      // If user is not authenticated, log out and redirect to login page
+      // If user is authenticated, we can call a private back end route to retrieve a list of pets, but
+      // if user is not authenticated, they are logged out and redirected to the login page
       const user: User = await getUser();
 
       if (user.success) {
-        // TODO: add that got help from another student to figure out how to create type using source code
+        // Another CS student at PSU, Robert Peterson, helped me to navigate the axios source code to create
+        // the type signature for the result of making an API call to this endpoint
         let result: AxiosResponse<PetRecord[], any>;
         try {
           result = await axios.get(
@@ -46,8 +52,7 @@ export function PetGallery() {
               },
             }
           );
-          // TODO: need comment explaining why this has an any type
-          // Catching any type to ensure catching all possible errors
+        // err has type of "any" because we explicitly want to catch all possible errors
         } catch (err: any) {
           // Upon encountering an unidentified server error, the user will be logged out and returned to login page
           if (err.response) {

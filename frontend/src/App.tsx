@@ -8,6 +8,8 @@ function App() {
     const {localStorageCache} = useStorage();
 
     return (
+        // If Auth0 is no longer the app's 3rd party auth provider, then the
+        // Auth0Provider context will no longer be necessary and should be removed
         <Auth0Provider
             domain={import.meta.env.VITE_AUTH0_DOMAIN}
             clientId={import.meta.env.VITE_AUTH0_CLIENT_ID}
