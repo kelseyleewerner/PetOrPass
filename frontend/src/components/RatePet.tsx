@@ -16,10 +16,6 @@ type PetRatingProfile = {
   imageUrl: string
 }
 
-type PetScoreRecord = {
-  avgScore: number
-}
-
 export function RatePet() {
   const { getUser, logOut } = useAuth();
   let [retrieveNextPet, setRetrieveNextPet] = useState(false);
@@ -131,7 +127,7 @@ export function RatePet() {
   );
 }
 
-export type RatePetProps = {
+type RatePetProps = {
   petName: string;
   imageUrl: string;
   setNextPet: Dispatch<SetStateAction<boolean>>;
@@ -199,7 +195,11 @@ function RatePetView(props: RatePetProps) {
   );
 }
 
-export type RatePetButtonsProps = {
+type PetScoreRecord = {
+  avgScore: number
+}
+
+type RatePetButtonsProps = {
   setNextPet: Dispatch<SetStateAction<boolean>>;
   setDisableRatingButtons: Dispatch<SetStateAction<boolean>>;
   disableRatingButtons: boolean;
@@ -278,7 +278,7 @@ function RatePetButtons(props: RatePetButtonsProps) {
   );
 }
 
-export type DisplayPetRatingProps = {
+type DisplayPetRatingProps = {
   setRetrieveNextPet: Dispatch<SetStateAction<boolean>>;
   retrieveNextPet: boolean;
   setDisableNextButton: Dispatch<SetStateAction<boolean>>;

@@ -122,7 +122,7 @@ export function PetGallery() {
   );
 }
 
-export type PetProfileProps = {
+type PetProfileProps = {
   petName: string | undefined;
   avgScore: string | number | undefined;
   imageUrl: string | undefined;

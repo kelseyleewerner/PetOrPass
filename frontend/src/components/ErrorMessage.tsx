@@ -1,7 +1,7 @@
 import errorImage from "../assets/error_message.svg";
 import React from "react";
 
-export type ErrorProps = {
+type ErrorProps = {
     errorMessage: string
 }
 export function ErrorMessage(props: ErrorProps) {
