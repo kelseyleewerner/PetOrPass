@@ -8,7 +8,8 @@
     "dev": "vite",
     "build": "vite build",
     "prod": "vitest run && vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "lint": "eslint --fix ."
   },
   "keywords": [],
   "author": "",
@@ -29,7 +30,10 @@
     "@types/react-dom": "^18.0.9",
     "@types/react-router-dom": "^5.3.3",
     "@types/testing-library__jest-dom": "^5.14.5",
+    "@typescript-eslint/eslint-plugin": "6.7.3",
+    "@typescript-eslint/parser": "6.7.3",
     "@vitejs/plugin-react": "^3.0.0",
+    "eslint": "^8.50.0",
     "jsdom": "^21.0.0",
     "msw": "^1.1.0",
     "typescript": "^4.9.4",

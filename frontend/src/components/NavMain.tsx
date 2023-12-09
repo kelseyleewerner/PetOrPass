@@ -1,14 +1,14 @@
 import { Link, Route, Routes } from "react-router-dom";
+import React from "react";
+import { Login } from "./Login";
 import { Logout } from "./Logout";
+import { PetGallery } from "./PetGallery";
+import { ProtectedRoute } from "./ProtectedRoute";
 import { RatePet } from "./RatePet";
 import { SubmitPetForm } from "./SubmitPetForm";
-import { PetGallery } from "./PetGallery";
-import { Login } from "./Login";
 import { useAuth } from "../services/AuthService";
-import React from "react";
-import { ProtectedRoute } from "./ProtectedRoute";
 
-export function NavMain() {
+export function NavMain(): JSX.Element {
   return (
     <>
       <NavBar />
@@ -18,7 +18,7 @@ export function NavMain() {
 }
 
 // Navigation bar is only displayed on the page if the user is logged in
-function NavBar() {
+function NavBar(): JSX.Element {
   const { isUserLoggedIn, isAuthReady } = useAuth();
 
   if (!isAuthReady()) {
@@ -28,7 +28,7 @@ function NavBar() {
   return <>{isUserLoggedIn() ? <NavView /> : <></>}</>;
 }
 
-function NavView() {
+function NavView(): JSX.Element {
   return (
     <nav className="navbar navbar-expand-md navbar-dark fixed-top mb-5 primary-color">
       <div className="container-fluid">
@@ -52,7 +52,7 @@ function NavView() {
   );
 }
 
-function NavLinks() {
+function NavLinks(): JSX.Element {
   return (
     <ul className="navbar-nav me-auto mb-2 mb-md-0">
       <li className="nav-item">
@@ -79,9 +79,9 @@ function NavLinks() {
   );
 }
 
-// Components wrapped in ProtectedRoute cannot be accessed via inputting a URL into the browser if the
-// user is not logged in
-function NavRoutes() {
+// Components wrapped in ProtectedRoute cannot be accessed via
+// inputting a URL into the browser if then user is not logged in
+function NavRoutes(): JSX.Element {
   return (
     <Routes>
       <Route

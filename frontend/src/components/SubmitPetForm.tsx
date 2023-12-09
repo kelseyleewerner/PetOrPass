@@ -1,27 +1,32 @@
 import { ChangeEvent, MouseEvent, useRef, useState } from "react";
+import { useAuth, User } from "../services/AuthService";
 import React from "react";
 import axios from "axios";
-import { useAuth, User } from "../services/AuthService";
 
-// This component allows the user to submit a pet to be rated by other users and included in the user's
-// gallery of submitted pets
-export function SubmitPetForm() {
+// This component allows the user to submit a pet to be rated by other users and
+// included in the user's gallery of submitted pets
+export function SubmitPetForm(): JSX.Element {
   const { getUser } = useAuth();
   let [petName, setPetName] = useState("");
   // I used the following reference to learn how to assign a type to the useState hook:
-  // https://stackoverflow.com/questions/53650468/set-types-on-usestate-react-hook-with-typescript
+  // https://stackoverflow.com/questions/53650468/
+  //  set-types-on-usestate-react-hook-with-typescript
   let [petImage, setPetImage] = useState<File | undefined>(undefined);
   let [submitSuccess, setSubmitSuccess] = useState(false);
   let [submitError, setSubmitError] = useState(false);
   let [disableButton, setDisableButton] = useState(false);
   const imageInputField = useRef<HTMLInputElement>(null);
 
-  const onChangePetName = (event: ChangeEvent<HTMLInputElement>) => {
+  const onChangePetName: (event: ChangeEvent<HTMLInputElement>) => void = (
+    event: ChangeEvent<HTMLInputElement>
+  ) => {
     setPetName(event.target.value);
     setSubmitError(false);
   };
 
-  const onChangePetImage = (event: ChangeEvent<HTMLInputElement>) => {
+  const onChangePetImage: (event: ChangeEvent<HTMLInputElement>) => void = (
+    event: ChangeEvent<HTMLInputElement>
+  ) => {
     if (event.target.files === null || event.target.files[0] === null) {
       setSubmitError(true);
     } else {
@@ -30,7 +35,9 @@ export function SubmitPetForm() {
     }
   };
 
-  const onSubmitPet = async (
+  const onSubmitPet: (
+    event: MouseEvent<HTMLButtonElement, globalThis.MouseEvent>
+  ) => Promise<void> = async (
     event: MouseEvent<HTMLButtonElement, globalThis.MouseEvent>
   ) => {
     event.preventDefault();
@@ -41,8 +48,9 @@ export function SubmitPetForm() {
 
     setDisableButton(true);
 
-    // If user is authenticated, we can call a private back end route to submit pet form data, but
-    // if user is not authenticated, they are logged out and redirected to the login page
+    // If user is authenticated, we can call a private back end route to submit
+    // pet form data, butif user is not authenticated, they are logged out and
+    // redirected to the login page
     const user: User = await getUser();
 
     if (user.success) {
@@ -147,7 +155,7 @@ export function SubmitPetForm() {
   );
 }
 
-function SubmitSuccessMessage() {
+function SubmitSuccessMessage(): JSX.Element {
   return (
     <div className="row text-center mt-3 success-text">
       <p>
@@ -157,7 +165,7 @@ function SubmitSuccessMessage() {
   );
 }
 
-function SubmitErrorMessage() {
+function SubmitErrorMessage(): JSX.Element {
   return (
     <div className="row text-center mt-3 error-text">
       <p>

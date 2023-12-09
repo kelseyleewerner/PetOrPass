@@ -1,11 +1,11 @@
-import errorImage from "../assets/error_message.svg";
 import React from "react";
+import errorImage from "../assets/error_message.svg";
 
 type ErrorProps = {
   errorMessage: string;
 };
 
-export function ErrorMessage(props: ErrorProps) {
+export function ErrorMessage(props: ErrorProps): JSX.Element {
   let { errorMessage } = props;
 
   return (

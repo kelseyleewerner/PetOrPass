@@ -1,8 +1,8 @@
-import { useAuth } from "../services/AuthService";
 import React from "react";
 import catImage from "../assets/nicecate.jpg";
+import { useAuth } from "../services/AuthService";
 
-export function Login() {
+export function Login(): JSX.Element {
   const { logIn } = useAuth();
 
   return (

@@ -5,10 +5,11 @@ import {
   useEffect,
   useState,
 } from "react";
-import React from "react";
-import axios, { AxiosResponse } from "axios";
-import { ErrorMessage } from "./ErrorMessage";
 import { useAuth, User } from "../services/AuthService";
+import React from "react";
+import axios from "axios";
+import { AxiosResponse } from "axios";
+import { ErrorMessage } from "./ErrorMessage";
 
 type PetRatingProfile = {
   petId: string;
@@ -16,23 +17,25 @@ type PetRatingProfile = {
   imageUrl: string;
 };
 
-// PetToRate type represents the expected shape of the data returned by the app's backend
-// for a pet that is being presented for rating
+// PetToRate type represents the expected shape of the data returned by the app's
+// backend for a pet that is being presented for rating
 type PetToRate = {
   pet_id: string;
   pet_name: string;
   image_name: string;
 };
 
-// This component displays pets to the user and allows the user to rate each pet as "Pet" or "Pass"
-export function RatePet() {
+// This component displays pets to the user and allows the user to rate each
+// pet as "Pet" or "Pass"
+export function RatePet(): JSX.Element {
   const { getUser, logOut } = useAuth();
   let [retrieveNextPet, setRetrieveNextPet] = useState(false);
   let [emptyPets, setEmptyPets] = useState(false);
   // I used the following reference to learn how to assign a type to the useState hook:
-  // https://stackoverflow.com/questions/53650468/set-types-on-usestate-react-hook-with-typescript
-  // Typecasting the default value of petToRate as a PetRatingProfile is possible as long as petToRate is checked for keys
-  // before trying to access a specific key
+  // https://stackoverflow.com/questions/53650468/
+  //  set-types-on-usestate-react-hook-with-typescript
+  // Typecasting the default value of petToRate as a PetRatingProfile is possible as
+  // long as petToRate is checked for keys before trying to access a specific key
   let [petToRate, setPetToRate] = useState<PetRatingProfile>(
     {} as PetRatingProfile
   );
@@ -40,18 +43,21 @@ export function RatePet() {
   let [disableRatingButtons, setDisableRatingButtons] = useState(false);
   let [disableNextButton, setDisableNextButton] = useState(false);
   // I used the following reference to learn how to assign a type to the useState hook:
-  // https://stackoverflow.com/questions/53650468/set-types-on-usestate-react-hook-with-typescript
+  // https://stackoverflow.com/questions/53650468/
+  //  set-types-on-usestate-react-hook-with-typescript
   let [newScore, setNewScore] = useState<number>(0);
 
   useEffect(() => {
-    const getPet = async () => {
-      // If user is authenticated, we can call a private back end route to retrieve a pet to rate, but
-      // if user is not authenticated, they are logged out and redirected to the login page
+    const getPet: () => Promise<void> = async () => {
+      // If user is authenticated, we can call a private back end route to retrieve a
+      // pet to rate, but if user is not authenticated, they are logged out and
+      // redirected to the login page
       const user: User = await getUser();
 
       if (user.success) {
-        // Another CS student at PSU, Robert Peterson, helped me to navigate the axios source code to create
-        // the type signature for the result of making an API call to this endpoint
+        // Another CS student at PSU, Robert Peterson, helped me to navigate the axios
+        // source code to create the type signature for the result of making an
+        // API call to this endpoint
         let result: AxiosResponse<PetToRate, any>;
         try {
           result = await axios.get(
@@ -64,11 +70,14 @@ export function RatePet() {
               },
             }
           );
-          // err has type of "any" because we explicitly want to catch all possible errors
+          // err has type of "any" because we explicitly want to
+          // catch all possible errors
         } catch (err: any) {
-          // Upon encountering an unidentified server error, the user will be logged out and returned to login page
+          // Upon encountering an unidentified server error, the user will be logged out
+          //  and returned to login page
           if (err.response) {
-            // If no pets have been submitted by any users, then the page will display an empty state
+            // If no pets have been submitted by any users, then the page will
+            //  display an empty state
             if (
               err.response.status === 404 &&
               err.response.data.hasOwnProperty("error") &&
@@ -107,7 +116,10 @@ export function RatePet() {
   return (
     <>
       {emptyPets ? (
-        <ErrorMessage errorMessage="uh-oh! Looks like no one has submitted any pets yet for rating! You can be the first by visiting the Submit Pet tab." />
+        <ErrorMessage
+          errorMessage="uh-oh! Looks like no one has submitted any pets yet for
+        rating! You can be the first by visiting the Submit Pet tab."
+        />
       ) : (
         <main className="container below-navbar">
           <div className="row text-center">
@@ -157,7 +169,7 @@ type RatePetProps = {
   setNewScore: Dispatch<SetStateAction<number>>;
 };
 
-function RatePetView(props: RatePetProps) {
+function RatePetView(props: RatePetProps): JSX.Element {
   let {
     petName,
     imageUrl,
@@ -221,7 +233,7 @@ type RatePetButtonsProps = {
   setNewScore: Dispatch<SetStateAction<number>>;
 };
 
-function RatePetButtons(props: RatePetButtonsProps) {
+function RatePetButtons(props: RatePetButtonsProps): JSX.Element {
   let {
     setNextPet,
     setDisableRatingButtons,
@@ -231,18 +243,23 @@ function RatePetButtons(props: RatePetButtonsProps) {
   } = props;
   const { getUser, logOut } = useAuth();
 
-  const onClickRatingButton = async (
+  const onClickRatingButton: (
+    event: MouseEvent<HTMLButtonElement, globalThis.MouseEvent>,
+    rating: number
+  ) => Promise<void> = async (
     event: MouseEvent<HTMLButtonElement, globalThis.MouseEvent>,
     rating: number
   ) => {
     setDisableRatingButtons(true);
 
-    // If user is authenticated, we can call a private back end route to update pet's score after being rated, but
-    // if user is not authenticated, they are logged out and redirected to the login page
+    // If user is authenticated, we can call a private back end route to update pet's
+    // score after being rated, but if user is not authenticated, they are logged
+    // out and redirected to the login page
     const user: User = await getUser();
     if (user.success) {
-      // Another CS student at PSU, Robert Peterson, helped me to navigate the axios source code to create
-      // the type signature for the result of making an API call to this endpoint
+      // Another CS student at PSU, Robert Peterson, helped me to navigate the axios
+      // source code to create the type signature for the result of making an API
+      // call to this endpoint
       let result: AxiosResponse<PetScoreRecord, any>;
       try {
         result = await axios.put(
@@ -261,7 +278,8 @@ function RatePetButtons(props: RatePetButtonsProps) {
         );
         // err has type of "any" because we explicitly want to catch all possible errors
       } catch (err: any) {
-        // If backend route returns an error, the user will be logged out and returned to login page
+        // If backend route returns an error, the user will be logged out
+        // and returned to login page
         logOut();
         return;
       }
@@ -305,7 +323,7 @@ type DisplayPetRatingProps = {
   newScore: number;
 };
 
-function DisplayPetRating(props: DisplayPetRatingProps) {
+function DisplayPetRating(props: DisplayPetRatingProps): JSX.Element {
   let {
     setRetrieveNextPet,
     retrieveNextPet,
@@ -314,9 +332,9 @@ function DisplayPetRating(props: DisplayPetRatingProps) {
     newScore,
   } = props;
 
-  const onClickNextButton = (
+  const onClickNextButton: (
     event: MouseEvent<HTMLButtonElement, globalThis.MouseEvent>
-  ) => {
+  ) => void = (event: MouseEvent<HTMLButtonElement, globalThis.MouseEvent>) => {
     setDisableNextButton(true);
     setRetrieveNextPet(!retrieveNextPet);
   };

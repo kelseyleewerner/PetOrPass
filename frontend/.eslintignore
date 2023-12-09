@@ -1,0 +1,11 @@
+.*ignore
+package-lock.json
+node_modules
+build
+docs
+app
+vite.config.ts
+**/*.test.*
+**/*.js
+**/*.jsx
+**/*.json

@@ -1,10 +1,10 @@
-import { NavMain } from "./components/NavMain";
-import { BrowserRouter } from "react-router-dom";
 import { Auth0Provider } from "@auth0/auth0-react";
 import { AuthProvider } from "./services/AuthService";
+import { BrowserRouter } from "react-router-dom";
+import { NavMain } from "./components/NavMain";
 import { useStorage } from "./services/StorageService";
 
-function App() {
+function App(): JSX.Element {
   const { localStorageCache } = useStorage();
 
   return (

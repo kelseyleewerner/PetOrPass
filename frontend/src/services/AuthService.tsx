@@ -2,7 +2,8 @@ import { createContext, ReactNode, useContext } from "react";
 import { useAuth0 } from "@auth0/auth0-react";
 import { useStorage } from "./StorageService";
 
-// This type is the shape of user data that clients of the AuthContext should expect to receive
+// This type is the shape of user data that clients of the AuthContext
+// should expect to receive
 export type User = {
   success: boolean;
   token: string;
@@ -17,9 +18,9 @@ type AuthContextProps = {
   logOut: () => void;
 };
 
-// The AuthProvider is a React Context that gives all of its child components access to the app's
-// authentication capabilities. It is a wrapper that abstracts away the implementation details of
-// supporting a 3rd party auth provider
+// The AuthProvider is a React Context that gives all of its child components access
+// to the app's authentication capabilities. It is a wrapper that abstracts away the
+// implementation details of supporting a 3rd party auth provider
 export const AuthProvider: ({
   children,
 }: {
@@ -69,9 +70,9 @@ export const AuthProvider: ({
       return null;
     } else {
       // The get() method on LocalStorageCache returns undefined or a
-      // Cacheable type (https://auth0.github.io/auth0-react/types/Cacheable.html), but using the Cacheable type
-      // produced errors that I was unable to address. Use of the "any" type is temporary until a better solution
-      // can be found
+      // Cacheable type (https://auth0.github.io/auth0-react/types/Cacheable.html),
+      // but using the Cacheable type produced errors that I was unable to address. Use
+      // of the "any" type is temporary until a better solution can be found
       const token: any | undefined = await localStorageCache.get(foundKey);
       if (token === undefined) {
         return null;
@@ -108,9 +109,9 @@ export const AuthProvider: ({
     return user_info;
   };
 
-  // These AuthContextProps are the public interface the clients of the AuthContext expect to have available.
-  // If Auth0 is replaced with another 3rd party auth provider, the public behavior of AuthContextProps should
-  // be maintained
+  // These AuthContextProps are the public interface the clients of the AuthContext
+  // expect to have available. If Auth0 is replaced with another 3rd party auth
+  // provider, the public behavior of AuthContextProps should be maintained
   const useAuthContextPackage: AuthContextProps = {
     getUser,
     isAuthReady,
@@ -126,15 +127,20 @@ export const AuthProvider: ({
   );
 };
 
-// I used a sample React app created by my full stack course instructor to add types and default prop values
+// I used a sample React app created by my full stack course instructor to add types and
+// default prop values
 // The original repo is gone, but I saved a fork of the repo:
-// https://github.com/kelseyleewerner/doggr_w23_fork/blob/master/frontend/src/services/AuthService.tsx#L100
-// https://github.com/kelseyleewerner/doggr_w23_fork/blob/master/frontend/src/types/DoggrTypes.ts#L13
+// https://github.com/kelseyleewerner/doggr_w23_fork/blob/master/frontend/src
+//  /services/AuthService.tsx#L100
+// https://github.com/kelseyleewerner/doggr_w23_fork/blob/master/frontend/src
+//  /types/DoggrTypes.ts#L13
 export const AuthContext: React.Context<AuthContextProps | undefined> =
   createContext<AuthContextProps | undefined>(undefined);
 
-// I used the following resource to avoid having to create an unnecessary default context:
-// https://stackoverflow.com/questions/61333188/react-typescript-avoid-context-default-value
+// I used the following resource to avoid having to create an
+// unnecessary default context:
+// https://stackoverflow.com/questions/61333188
+//  /react-typescript-avoid-context-default-value
 export const useAuth: () => AuthContextProps = () => {
   const context = useContext(AuthContext);
   if (context === undefined) {
